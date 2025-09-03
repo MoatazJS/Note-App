@@ -23,7 +23,6 @@ export default function Signup() {
   });
 
   async function handleSignUp(data: RegisterFormValues) {
-    console.log(data);
     setIsLoading(true);
     try {
       const response = await apiServices.registerApi(data);
