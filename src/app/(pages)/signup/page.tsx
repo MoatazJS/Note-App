@@ -1,27 +1,40 @@
 "use client";
 
+import { apiServices } from "@/lib/ApiCalls/services";
 import {
   RegisterFormSchema,
   RegisterFormValues,
 } from "@/lib/validations/authSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function Signup() {
+  const [isLoading, setIsLoading] = useState(false);
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(RegisterFormSchema),
     mode: "onChange",
   });
 
-  function handleSignUp(data: RegisterFormValues) {
+  async function handleSignUp(data: RegisterFormValues) {
     console.log(data);
+    setIsLoading(true);
+    try {
+      const response = await apiServices.registerApi(data);
+      console.log(response);
+    } catch (error) {
+      console.error("Signup failed", error);
+    } finally {
+      setIsLoading(false);
+      reset();
+    }
   }
-
   return (
     <div className="w-full h-screen bg-black flex items-center justify-center px-6">
       <div className="w-full max-w-md bg-slate-900 rounded-2xl shadow-lg p-8 border border-slate-700">
@@ -124,6 +137,7 @@ export default function Signup() {
 
           {/* Submit Button */}
           <button
+            disabled={isLoading}
             type="submit"
             className="w-full cursor-pointer bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition shadow-lg hover:shadow-purple-500/20"
           >
