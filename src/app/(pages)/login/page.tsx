@@ -4,10 +4,15 @@ import { apiServices } from "@/lib/ApiCalls/services";
 import { LoginFormSchema, LoginFormValues } from "@/lib/validations/authSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function Login() {
+  const router = useRouter();
+  if (localStorage.getItem("token")) {
+    router.push("/home");
+  }
   const [isLoading, setIsLoading] = useState(false);
   const {
     register,
@@ -24,11 +29,13 @@ export default function Login() {
     try {
       const response = await apiServices.loginApi(data);
       console.log(response);
+      localStorage.setItem("token", response.token);
     } catch (error) {
       console.error("Login failed", error);
     } finally {
       setIsLoading(false);
       reset();
+      console.log(localStorage.getItem("token"));
     }
   }
 
