@@ -44,3 +44,19 @@ export const RegisterFormSchema = z.object({
     ),
 });
 export type RegisterFormValues = z.infer<typeof RegisterFormSchema>;
+
+export const LoginFormSchema = z.object({
+  email: z
+    .string()
+    .nonempty("This field is required")
+    .email("Invalid email address"),
+
+  password: z
+    .string()
+    .nonempty("This field is required")
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/,
+      "Password must be at least 8 characters and include an uppercase letter, a lowercase letter, a number, and a special character."
+    ),
+});
+export type LoginFormValues = z.infer<typeof LoginFormSchema>;
