@@ -15,7 +15,6 @@ import { useRouter } from "next/navigation";
 import ProtectRoute from "@/lib/ProtectRoute/ProtectedRoute";
 export default function Home() {
   const [notes, setNotes] = useState<Note[]>([]);
-
   const [newTitle, setNewTitle] = useState("");
   const [newText, setNewText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
