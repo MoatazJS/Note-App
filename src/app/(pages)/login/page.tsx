@@ -5,17 +5,23 @@ import { LoginFormSchema, LoginFormValues } from "@/lib/validations/authSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function Login() {
   const router = useRouter();
-  if (typeof window !== "undefined") {
+  // if (typeof window !== "undefined") {
+  //   const token = localStorage.getItem("token");
+  //   if (token) {
+  //     router.push("/home"); // redirect if token exists
+  //   }
+  // }
+  useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      router.push("/home"); // redirect if token exists
+      router.push("/home");
     }
-  }
+  }, [router]);
   const [isLoading, setIsLoading] = useState(false);
   const {
     register,
