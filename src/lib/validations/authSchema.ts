@@ -20,10 +20,7 @@ export const RegisterFormSchema = z.object({
       "Password must be at least 8 characters and include an uppercase letter, a lowercase letter, a number, and a special character."
     ),
   age: z
-    .number({
-      required_error: "Age is required",
-      invalid_type_error: "Age must be a number",
-    })
+    .number()
     .int({ message: "Age must be a whole number" })
     .min(13, { message: "You must be at least 13 years old" })
     .max(100, { message: "Please enter a valid age" }),
