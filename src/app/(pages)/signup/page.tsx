@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic";
 import { useRouter } from "next/navigation";
 import { apiServices } from "@/lib/ApiCalls/services";
 import {
@@ -12,8 +13,11 @@ import { useForm } from "react-hook-form";
 
 export default function Signup() {
   const router = useRouter();
-  if (localStorage.getItem("token")) {
-    router.push("/home");
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("token");
+    if (token) {
+      router.push("/home"); // redirect if token exists
+    }
   }
   const [isLoading, setIsLoading] = useState(false);
   const {

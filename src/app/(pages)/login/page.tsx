@@ -1,5 +1,5 @@
 "use client";
-
+export const dynamic = "force-dynamic";
 import { apiServices } from "@/lib/ApiCalls/services";
 import { LoginFormSchema, LoginFormValues } from "@/lib/validations/authSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,8 +10,11 @@ import { useForm } from "react-hook-form";
 
 export default function Login() {
   const router = useRouter();
-  if (localStorage.getItem("token")) {
-    router.push("/home");
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("token");
+    if (token) {
+      router.push("/home"); // redirect if token exists
+    }
   }
   const [isLoading, setIsLoading] = useState(false);
   const {
