@@ -13,7 +13,7 @@ import { apiServices } from "@/lib/ApiCalls/services";
 import { Plus, Edit2, Trash2 } from "lucide-react";
 import { Note } from "@/lib/Interfaces/types";
 import { useRouter } from "next/navigation";
-import ProtectRoute from "@/lib/ProtectRoute/ProtectedRoute";
+// import ProtectRoute from "@/lib/ProtectRoute/ProtectedRoute";
 import useToken from "@/lib/hooks/TokenHook";
 
 export default function Home() {
@@ -148,7 +148,7 @@ export default function Home() {
   }
 
   return (
-    <ProtectRoute>
+    <>
       {Token === null ? (
         <p className="text-white">Loading...</p> // conditional rendering
       ) : (
@@ -307,6 +307,6 @@ export default function Home() {
           </Dialog>
         </div>
       )}
-    </ProtectRoute>
+    </>
   );
 }
