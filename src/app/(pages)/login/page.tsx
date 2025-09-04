@@ -16,12 +16,13 @@ export default function Login() {
   //     router.push("/home"); // redirect if token exists
   //   }
   // }
+  const [reToken, setReToken] = useState<string | null>(null);
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       router.push("/home");
     }
-  }, [router]);
+  }, [router, reToken]);
   const [isLoading, setIsLoading] = useState(false);
   const {
     register,
@@ -39,6 +40,7 @@ export default function Login() {
       console.log(response);
       if (window) {
         localStorage.setItem("token", response.token);
+        setReToken(response.token);
       }
     } catch (error) {
       console.error("Login failed", error);
