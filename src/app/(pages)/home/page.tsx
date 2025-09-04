@@ -24,6 +24,7 @@ export default function Home() {
   const [newTitle, setNewTitle] = useState("");
   const [newText, setNewText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [open, setOpen] = useState(false);
   async function HandleCreateNote() {
     if (!newTitle.trim() || !newText.trim()) return;
 
@@ -34,6 +35,9 @@ export default function Home() {
         title: newTitle,
         content: newText,
       });
+      if (response?.msg == "done") {
+        setOpen(false);
+      }
       console.log(response);
       // Add the new note to state (use response.note from your API)
       setNotes([
@@ -62,7 +66,7 @@ export default function Home() {
         </h1>
 
         {/* Add Note button only on md+ */}
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <button className="hidden md:flex cursor-pointer items-center gap-2 bg-slate-800 border border-slate-600 px-5 py-2 rounded-xl shadow hover:bg-slate-700 transition mt-4 md:mt-0">
               <Plus size={20} /> Add Note
@@ -138,7 +142,7 @@ export default function Home() {
       </div>
 
       {/* Floating button - only on mobile */}
-      <Dialog>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <button className="md:hidden fixed bottom-6 right-6 flex items-center gap-2 bg-purple-600 hover:bg-purple-500 px-6 py-3 rounded-full shadow-lg transition z-20">
             <Plus size={22} />

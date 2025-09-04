@@ -4,6 +4,7 @@ import {
   LoginResponse,
   CreateNoteData,
   CreateNoteResponse,
+  GetUserNotesResponse,
 } from "../Interfaces/types";
 const token = "3b8ny__" + localStorage.getItem("token");
 import { RegisterFormValues } from "@/lib/validations/authSchema";
@@ -37,6 +38,19 @@ class ApiServices {
       },
       body: JSON.stringify(data),
     }).then((res) => res.json());
+  }
+  async fetchUserNotes(): Promise<GetUserNotesResponse> {
+    const res = await fetch(
+      "https://note-sigma-black.vercel.app/api/v1/notes",
+      {
+        headers: {
+          "Content-Type": "application/json",
+          token,
+        },
+      }
+    );
+
+    return res.json();
   }
 }
 
