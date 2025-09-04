@@ -40,7 +40,7 @@ export interface CreateNoteResponse {
 export interface Note {
   id: string; // backend gives _id as string, not number
   title: string;
-  text: string;
+  content: string;
 }
 export interface NoteApi {
   _id: string;

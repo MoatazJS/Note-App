@@ -7,7 +7,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { apiServices } from "@/lib/ApiCalls/services";
 import { Plus, Edit2, Trash2 } from "lucide-react";
 import { Note } from "@/lib/Interfaces/types";
@@ -16,15 +16,34 @@ export default function Home() {
   const username = "Moataz";
 
   const [notes, setNotes] = useState<Note[]>([
-    { id: "1", title: "Groceries", text: "Buy groceries and milk 🥛" },
-    { id: "2", title: "Project", text: "Finish Next.js project 🚀" },
-    { id: "3", title: "Call", text: "Call Ahmed about wedding plans 📞" },
+    { id: "1", title: "Groceries", content: "Buy groceries and milk 🥛" },
+    { id: "2", title: "Project", content: "Finish Next.js project 🚀" },
+    { id: "3", title: "Call", content: "Call Ahmed about wedding plans 📞" },
   ]);
 
   const [newTitle, setNewTitle] = useState("");
   const [newText, setNewText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
+
+  async function GetAllUserNotes() {
+    try {
+      const response = await apiServices.fetchUserNotes();
+
+      const mappedNotes: Note[] = response.notes.map((note) => ({
+        id: note._id,
+        title: note.title,
+        content: note.content,
+      }));
+
+      setNotes(mappedNotes);
+    } catch (err) {
+      console.error("Error fetching notes:", err);
+    }
+  }
+  useEffect(() => {
+    GetAllUserNotes();
+  }, []);
   async function HandleCreateNote() {
     if (!newTitle.trim() || !newText.trim()) return;
 
@@ -39,17 +58,16 @@ export default function Home() {
         setOpen(false);
       }
       console.log(response);
-      // Add the new note to state (use response.note from your API)
+      // Add the new note to state
       setNotes([
         ...notes,
         {
-          id: response.note._id, // use the backend ID
+          id: response.note._id,
           title: response.note.title,
-          text: response.note.content, // map "content" to our local "text"
+          content: response.note.content,
         },
       ]);
 
-      // Clear inputs
       setNewTitle("");
       setNewText("");
       setIsLoading(false);
@@ -65,7 +83,7 @@ export default function Home() {
           Welcome, <span className="text-purple-400">{username}</span>
         </h1>
 
-        {/* Add Note button only on md+ */}
+        {/*on md+ */}
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <button className="hidden md:flex cursor-pointer items-center gap-2 bg-slate-800 border border-slate-600 px-5 py-2 rounded-xl shadow hover:bg-slate-700 transition mt-4 md:mt-0">
@@ -126,7 +144,7 @@ export default function Home() {
               {note.title}
             </h2>
             {/* Note text */}
-            <p className="text-slate-300 whitespace-pre-wrap">{note.text}</p>
+            <p className="text-slate-300 whitespace-pre-wrap">{note.content}</p>
 
             {/* Actions */}
             <div className="flex justify-end gap-4 mt-4">
@@ -141,7 +159,7 @@ export default function Home() {
         ))}
       </div>
 
-      {/* Floating button - only on mobile */}
+      {/* Floating button*/}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <button className="md:hidden fixed bottom-6 right-6 flex items-center gap-2 bg-purple-600 hover:bg-purple-500 px-6 py-3 rounded-full shadow-lg transition z-20">
