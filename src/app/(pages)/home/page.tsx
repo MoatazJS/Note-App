@@ -84,12 +84,15 @@ export default function Home() {
   async function GetAllUserNotes() {
     try {
       const response = await apiServices.fetchUserNotes();
-
+      if (response.msg === "not notes found") {
+        return;
+      }
       const mappedNotes: Note[] = response.notes.map((note) => ({
         id: note._id,
         title: note.title,
         content: note.content,
       }));
+
       setNotes(mappedNotes);
     } catch (err) {
       console.error("Error fetching notes:", err);
