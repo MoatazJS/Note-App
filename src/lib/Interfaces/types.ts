@@ -21,3 +21,24 @@ export interface LoginResponse {
   msg: string;
   token: string;
 }
+export interface CreateNoteData {
+  title: string;
+  content: string;
+}
+export interface CreateNoteResponse {
+  msg: string;
+  note: {
+    _id: string;
+    title: string;
+    content: string;
+    createdBy: string;
+    createdAt: string; // ISO date string
+    updatedAt: string; // ISO date string
+    __v: number;
+  };
+}
+export interface Note {
+  id: string; // backend gives _id as string, not number
+  title: string;
+  text: string;
+}

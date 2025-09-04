@@ -1,5 +1,5 @@
 "use client";
-
+import { useRouter } from "next/navigation";
 import { apiServices } from "@/lib/ApiCalls/services";
 import {
   RegisterFormSchema,
@@ -11,6 +11,10 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function Signup() {
+  const router = useRouter();
+  if (localStorage.getItem("token")) {
+    router.push("/home");
+  }
   const [isLoading, setIsLoading] = useState(false);
   const {
     register,
@@ -32,6 +36,7 @@ export default function Signup() {
     } finally {
       setIsLoading(false);
       reset();
+      router.push("/login");
     }
   }
   return (

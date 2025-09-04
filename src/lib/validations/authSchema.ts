@@ -27,15 +27,6 @@ export const RegisterFormSchema = z.object({
     .int({ message: "Age must be a whole number" })
     .min(13, { message: "You must be at least 13 years old" })
     .max(100, { message: "Please enter a valid age" }),
-  // age: z
-  //   .number({
-  //     invalid_type_error: "Age must be a number",
-  //     required_error: "Age is required",
-  //   })
-  //   .refine((val) => !Number.isNaN(val), { message: "Age is required" })
-  //   .int()
-  //   .min(13, { message: "You must be at least 13 years old" })
-  //   .max(100, { message: "Please enter a valid age" }),
   phone: z
     .string()
     .regex(
