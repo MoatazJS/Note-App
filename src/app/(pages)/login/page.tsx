@@ -23,13 +23,14 @@ export default function Login() {
     resolver: zodResolver(LoginFormSchema),
     mode: "onChange",
   });
-
   async function handleLoginSubmit(data: LoginFormValues) {
     setIsLoading(true);
     try {
       const response = await apiServices.loginApi(data);
       console.log(response);
-      localStorage.setItem("token", response.token);
+      if (window) {
+        localStorage.setItem("token", response.token);
+      }
     } catch (error) {
       console.error("Login failed", error);
     } finally {
