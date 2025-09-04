@@ -93,7 +93,7 @@ class ApiServices {
     return await fetch(
       `https://note-sigma-black.vercel.app/api/v1/notes/${id}`,
       {
-        method: "PUT",
+        method: "DELETE",
         headers: {
           "Content-Type": "application/json",
           token: "3b8ny__" + Token,
