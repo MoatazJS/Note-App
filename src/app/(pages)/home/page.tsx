@@ -13,7 +13,10 @@ import { Plus, Edit2, Trash2 } from "lucide-react";
 import { Note } from "@/lib/Interfaces/types";
 import { useRouter } from "next/navigation";
 import ProtectRoute from "@/lib/ProtectRoute/ProtectedRoute";
+import useToken from "@/lib/hooks/TokenHook";
+
 export default function Home() {
+  const Token = useToken();
   const [notes, setNotes] = useState<Note[]>([]);
   const [newTitle, setNewTitle] = useState("");
   const [newText, setNewText] = useState("");
@@ -22,15 +25,17 @@ export default function Home() {
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const router = useRouter();
   const handleLogout = () => {
-    localStorage.removeItem("token"); // clear token
-    router.push("/login"); // redirect to login page
+    if (window) {
+      localStorage.removeItem("token"); // clear token
+      router.push("/login"); // redirect to login page
+    }
   };
 
   async function handleDeleteNote(noteId: string) {
     try {
       setIsLoading(true);
 
-      const response = await apiServices.deleteNoteApi(noteId);
+      const response = await apiServices.deleteNoteApi(Token, noteId);
 
       if (response?.msg === "done") {
         setNotes((prev) => prev.filter((note) => note.id !== noteId));
@@ -55,7 +60,7 @@ export default function Home() {
     try {
       setIsLoading(true);
 
-      const response = await apiServices.updateNoteApi(selectedNote.id, {
+      const response = await apiServices.updateNoteApi(Token, selectedNote.id, {
         title: newTitle,
         content: newText,
       });
@@ -83,7 +88,7 @@ export default function Home() {
   }
   async function GetAllUserNotes() {
     try {
-      const response = await apiServices.fetchUserNotes();
+      const response = await apiServices.fetchUserNotes(Token);
       if (response.msg === "not notes found") {
         return;
       }
@@ -99,18 +104,24 @@ export default function Home() {
     }
   }
   useEffect(() => {
-    GetAllUserNotes();
-  }, []);
+    if (Token) {
+      GetAllUserNotes();
+    }
+  }, [Token]);
+
   async function HandleCreateNote() {
     if (!newTitle.trim() || !newText.trim()) return;
 
     try {
       // Call API
       setIsLoading(true);
-      const response = await apiServices.createNewNoteApi({
-        title: newTitle,
-        content: newText,
-      });
+      const response = await apiServices.createNewNoteApi(
+        {
+          title: newTitle,
+          content: newText,
+        },
+        Token
+      );
       if (response?.msg == "done") {
         setOpen(false);
       }

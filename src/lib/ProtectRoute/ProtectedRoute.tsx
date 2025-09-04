@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import useToken from "@/lib/hooks/TokenHook";
 
 export default function ProtectRoute({
   children,
@@ -8,13 +9,12 @@ export default function ProtectRoute({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-
+  const token = useToken();
   useEffect(() => {
-    const token = localStorage.getItem("token");
     if (!token) {
       router.push("/login"); // redirect if not logged in
     }
-  }, [router]);
+  }, [router, token]);
 
   return <>{children}</>;
 }

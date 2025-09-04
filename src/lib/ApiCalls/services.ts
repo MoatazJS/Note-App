@@ -8,7 +8,7 @@ import {
   DeleteNoteResponse,
   UpdateNoteResponse,
 } from "../Interfaces/types";
-const token = "3b8ny__" + localStorage.getItem("token");
+// const token = "3b8ny__" + localStorage.getItem("token");
 import { RegisterFormValues } from "@/lib/validations/authSchema";
 class ApiServices {
   async registerApi(data: RegisterFormValues): Promise<RegisterResponse> {
@@ -31,23 +31,32 @@ class ApiServices {
       }
     ).then((res) => res.json());
   }
-  async createNewNoteApi(data: CreateNoteData): Promise<CreateNoteResponse> {
+  async createNewNoteApi(
+    data: CreateNoteData,
+    Token: string | null
+  ): Promise<CreateNoteResponse> {
+    if (!Token) {
+      throw new Error("Authentication token is missing.");
+    }
     return await fetch("https://note-sigma-black.vercel.app/api/v1/notes", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        token,
+        token: "3b8ny__" + Token,
       },
       body: JSON.stringify(data),
     }).then((res) => res.json());
   }
-  async fetchUserNotes(): Promise<GetUserNotesResponse> {
+  async fetchUserNotes(Token: string | null): Promise<GetUserNotesResponse> {
+    if (!Token) {
+      throw new Error("Authentication token is missing.");
+    }
     const res = await fetch(
       "https://note-sigma-black.vercel.app/api/v1/notes",
       {
         headers: {
           "Content-Type": "application/json",
-          token,
+          token: "3b8ny__" + Token,
         },
       }
     );
@@ -55,29 +64,39 @@ class ApiServices {
     return res.json();
   }
   async updateNoteApi(
+    Token: string | null,
     id: string,
     data: { title: string; content: string }
   ): Promise<UpdateNoteResponse> {
+    if (!Token) {
+      throw new Error("Authentication token is missing.");
+    }
     return await fetch(
       `https://note-sigma-black.vercel.app/api/v1/notes/${id}`,
       {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          token,
+          token: "3b8ny__" + Token,
         },
         body: JSON.stringify(data),
       }
     ).then((res) => res.json());
   }
-  async deleteNoteApi(id: string): Promise<DeleteNoteResponse> {
+  async deleteNoteApi(
+    Token: string | null,
+    id: string
+  ): Promise<DeleteNoteResponse> {
+    if (!Token) {
+      throw new Error("Authentication token is missing.");
+    }
     return await fetch(
       `https://note-sigma-black.vercel.app/api/v1/notes/${id}`,
       {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          token,
+          token: "3b8ny__" + Token,
         },
       }
     ).then((res) => res.json());
