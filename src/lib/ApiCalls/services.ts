@@ -52,6 +52,22 @@ class ApiServices {
 
     return res.json();
   }
+  async updateNoteApi(
+    id: string,
+    data: { title: string; content: string }
+  ): Promise<CreateNoteResponse> {
+    return await fetch(
+      `https://note-sigma-black.vercel.app/api/v1/notes/${id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          token,
+        },
+        body: JSON.stringify(data),
+      }
+    ).then((res) => res.json());
+  }
 }
 
 export const apiServices = new ApiServices();

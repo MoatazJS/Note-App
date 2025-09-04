@@ -25,7 +25,47 @@ export default function Home() {
   const [newText, setNewText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
+  function handleEditNote(note: Note) {
+    setSelectedNote(note);
+    setNewTitle(note.title);
+    setNewText(note.content);
+    setOpen(true);
+  }
+  async function handleUpdateNote() {
+    if (!selectedNote) return;
+    if (!newTitle.trim() || !newText.trim()) return;
+
+    try {
+      setIsLoading(true);
+
+      const response = await apiServices.updateNoteApi(selectedNote.id, {
+        title: newTitle,
+        content: newText,
+      });
+
+      if (response?.msg === "done") {
+        // update locally
+        setNotes((prev) =>
+          prev.map((note) =>
+            note.id === selectedNote.id
+              ? { ...note, title: newTitle, content: newText }
+              : note
+          )
+        );
+
+        setOpen(false);
+        setSelectedNote(null);
+        setNewTitle("");
+        setNewText("");
+      }
+    } catch (err) {
+      console.error("Error updating note:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  }
   async function GetAllUserNotes() {
     try {
       const response = await apiServices.fetchUserNotes();
@@ -122,12 +162,12 @@ export default function Home() {
 
             {/* Save button */}
             <button
-              onClick={HandleCreateNote}
+              onClick={selectedNote ? handleUpdateNote : HandleCreateNote}
               disabled={isLoading}
               className="cursor-pointer mt-3 bg-purple-600 hover:bg-purple-500 px-4 py-2 rounded-lg 
                transition w-full font-medium"
             >
-              Save Note
+              {selectedNote ? "Update Note" : "Save Note"}
             </button>
           </DialogContent>
         </Dialog>
@@ -148,7 +188,10 @@ export default function Home() {
 
             {/* Actions */}
             <div className="flex justify-end gap-4 mt-4">
-              <button className="text-slate-400 hover:text-blue-400 transition">
+              <button
+                onClick={() => handleEditNote(note)}
+                className="text-slate-400 hover:text-blue-400 transition"
+              >
                 <Edit2 size={18} />
               </button>
               <button className="text-slate-400 hover:text-red-400 transition">
@@ -203,11 +246,11 @@ export default function Home() {
           {/* Save button */}
           <button
             disabled={isLoading}
-            onClick={HandleCreateNote}
+            onClick={selectedNote ? handleUpdateNote : HandleCreateNote}
             className="cursor-pointer mt-3 bg-purple-600 hover:bg-purple-500 
                  px-4 py-2 rounded-lg transition w-full text-white"
           >
-            Save Note
+            {selectedNote ? "Update Note" : "Save Note"}
           </button>
         </DialogContent>
       </Dialog>
