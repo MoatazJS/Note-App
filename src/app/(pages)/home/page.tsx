@@ -11,21 +11,36 @@ import { useEffect, useState } from "react";
 import { apiServices } from "@/lib/ApiCalls/services";
 import { Plus, Edit2, Trash2 } from "lucide-react";
 import { Note } from "@/lib/Interfaces/types";
-
+import { useRouter } from "next/navigation";
 export default function Home() {
-  const username = "Moataz";
-
-  const [notes, setNotes] = useState<Note[]>([
-    { id: "1", title: "Groceries", content: "Buy groceries and milk 🥛" },
-    { id: "2", title: "Project", content: "Finish Next.js project 🚀" },
-    { id: "3", title: "Call", content: "Call Ahmed about wedding plans 📞" },
-  ]);
+  const [notes, setNotes] = useState<Note[]>([]);
 
   const [newTitle, setNewTitle] = useState("");
   const [newText, setNewText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+  const router = useRouter();
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // clear token
+    router.push("/login"); // redirect to login page
+  };
+
+  async function handleDeleteNote(noteId: string) {
+    try {
+      setIsLoading(true);
+
+      const response = await apiServices.deleteNoteApi(noteId);
+
+      if (response?.msg === "done") {
+        setNotes((prev) => prev.filter((note) => note.id !== noteId));
+      }
+    } catch (err) {
+      console.error("Error deleting note:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   function handleEditNote(note: Note) {
     setSelectedNote(note);
@@ -54,7 +69,7 @@ export default function Home() {
               : note
           )
         );
-
+        console.log(response);
         setOpen(false);
         setSelectedNote(null);
         setNewTitle("");
@@ -75,7 +90,6 @@ export default function Home() {
         title: note.title,
         content: note.content,
       }));
-
       setNotes(mappedNotes);
     } catch (err) {
       console.error("Error fetching notes:", err);
@@ -119,58 +133,66 @@ export default function Home() {
     <div className="w-full min-h-screen bg-black text-white px-6 py-8">
       {/* Header */}
       <header className="flex flex-col md:flex-row justify-between items-center mb-10 sticky top-0 bg-black z-10 py-4">
-        <h1 className="text-3xl font-bold text-slate-200 text-center md:text-left">
-          Welcome, <span className="text-purple-400">{username}</span>
+        <h1 className="text-3xl font-bold text-purple-400 text-center md:text-left">
+          Your Notes, Your Space ✨
         </h1>
+        <div className="flex items-center gap-4 mt-4 md:mt-0">
+          {/* Logout button */}
+          <button
+            onClick={handleLogout}
+            className="cursor-pointer bg-slate-800 border border-slate-600 text-slate-200 px-4 py-2 rounded-xl shadow hover:bg-slate-700 transition"
+          >
+            Logout
+          </button>
+          {/*on md+ */}
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <button className="hidden md:flex cursor-pointer items-center gap-2 bg-slate-800 border border-slate-600 px-5 py-2 rounded-xl shadow hover:bg-slate-700 transition mt-4 md:mt-0">
+                <Plus size={20} /> Add Note
+              </button>
+            </DialogTrigger>
+            <DialogContent className="bg-slate-900 border border-slate-700 text-slate-200 rounded-2xl shadow-lg">
+              <DialogHeader>
+                <DialogTitle className="text-xl font-semibold text-purple-400">
+                  Add a new note
+                </DialogTitle>
+                <DialogDescription className="text-slate-400">
+                  Fill in the title and note details below:
+                </DialogDescription>
+              </DialogHeader>
 
-        {/*on md+ */}
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <button className="hidden md:flex cursor-pointer items-center gap-2 bg-slate-800 border border-slate-600 px-5 py-2 rounded-xl shadow hover:bg-slate-700 transition mt-4 md:mt-0">
-              <Plus size={20} /> Add Note
-            </button>
-          </DialogTrigger>
-          <DialogContent className="bg-slate-900 border border-slate-700 text-slate-200 rounded-2xl shadow-lg">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-semibold text-purple-400">
-                Add a new note
-              </DialogTitle>
-              <DialogDescription className="text-slate-400">
-                Fill in the title and note details below:
-              </DialogDescription>
-            </DialogHeader>
-
-            {/* Title input */}
-            <input
-              type="text"
-              className="w-full p-3 rounded-md bg-slate-800 text-slate-200 border border-slate-600 
+              {/* Title input */}
+              <input
+                type="text"
+                className="w-full p-3 rounded-md bg-slate-800 text-slate-200 border border-slate-600 
                focus:outline-none focus:ring-2 focus:ring-purple-500"
-              placeholder="Note Title"
-              value={newTitle}
-              onChange={(e) => setNewTitle(e.target.value)}
-            />
+                placeholder="Note Title"
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+              />
 
-            {/* Note area */}
-            <textarea
-              className="w-full mt-3 p-3 rounded-md bg-slate-800 text-slate-200 border border-slate-600 
+              {/* Note area */}
+              <textarea
+                className="w-full mt-3 p-3 rounded-md bg-slate-800 text-slate-200 border border-slate-600 
                focus:outline-none focus:ring-2 focus:ring-purple-500"
-              rows={4}
-              placeholder="Write your note..."
-              value={newText}
-              onChange={(e) => setNewText(e.target.value)}
-            />
+                rows={4}
+                placeholder="Write your note..."
+                value={newText}
+                onChange={(e) => setNewText(e.target.value)}
+              />
 
-            {/* Save button */}
-            <button
-              onClick={selectedNote ? handleUpdateNote : HandleCreateNote}
-              disabled={isLoading}
-              className="cursor-pointer mt-3 bg-purple-600 hover:bg-purple-500 px-4 py-2 rounded-lg 
+              {/* Save button */}
+              <button
+                onClick={selectedNote ? handleUpdateNote : HandleCreateNote}
+                disabled={isLoading}
+                className="cursor-pointer mt-3 bg-purple-600 hover:bg-purple-500 px-4 py-2 rounded-lg 
                transition w-full font-medium"
-            >
-              {selectedNote ? "Update Note" : "Save Note"}
-            </button>
-          </DialogContent>
-        </Dialog>
+              >
+                {selectedNote ? "Update Note" : "Save Note"}
+              </button>
+            </DialogContent>
+          </Dialog>
+        </div>
       </header>
 
       {/* Notes grid */}
@@ -194,7 +216,10 @@ export default function Home() {
               >
                 <Edit2 size={18} />
               </button>
-              <button className="text-slate-400 hover:text-red-400 transition">
+              <button
+                onClick={() => handleDeleteNote(note.id)}
+                className="text-slate-400 hover:text-red-400 transition"
+              >
                 <Trash2 size={18} />
               </button>
             </div>

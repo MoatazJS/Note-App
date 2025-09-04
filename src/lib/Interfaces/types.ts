@@ -56,3 +56,15 @@ export interface GetUserNotesResponse {
   msg: string;
   notes: NoteApi[];
 }
+export interface UpdateNoteResponse {
+  msg: string;
+  id: string;
+  title: string;
+  content: string;
+  createdBy?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+export interface DeleteNoteResponse {
+  msg: string;
+}

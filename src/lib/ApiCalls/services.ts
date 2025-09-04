@@ -5,6 +5,8 @@ import {
   CreateNoteData,
   CreateNoteResponse,
   GetUserNotesResponse,
+  DeleteNoteResponse,
+  UpdateNoteResponse,
 } from "../Interfaces/types";
 const token = "3b8ny__" + localStorage.getItem("token");
 import { RegisterFormValues } from "@/lib/validations/authSchema";
@@ -55,7 +57,7 @@ class ApiServices {
   async updateNoteApi(
     id: string,
     data: { title: string; content: string }
-  ): Promise<CreateNoteResponse> {
+  ): Promise<UpdateNoteResponse> {
     return await fetch(
       `https://note-sigma-black.vercel.app/api/v1/notes/${id}`,
       {
@@ -65,6 +67,18 @@ class ApiServices {
           token,
         },
         body: JSON.stringify(data),
+      }
+    ).then((res) => res.json());
+  }
+  async deleteNoteApi(id: string): Promise<DeleteNoteResponse> {
+    return await fetch(
+      `https://note-sigma-black.vercel.app/api/v1/notes/${id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          token,
+        },
       }
     ).then((res) => res.json());
   }
